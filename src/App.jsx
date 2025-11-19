@@ -3,23 +3,16 @@ import { useState } from 'react';
 import { MoviesList } from './components/MoviesList';
 import moviesFromServer from './api/movies.json';
 
-function getFilteredMovies(movies, { query }) {
-  let filteredMovies = [...movies];
-
-  if (query) {
-    filteredMovies = filteredMovies.filter(
-      movie =>
-        movie.title.toLowerCase().includes(query.trim().toLowerCase()) ||
-        movie.description.toLowerCase().includes(query.trim().toLowerCase()),
-    );
-  }
-
-  return filteredMovies;
-}
-
 export const App = () => {
   const [query, setQuery] = useState('');
-  const newMovies = getFilteredMovies(moviesFromServer, { query });
+  const visibleMovies = moviesFromServer.filter(movie => {
+    const normalizedQuery = query.toLowerCase().trim();
+
+    return (
+      movie.title.toLowerCase().includes(normalizedQuery) ||
+      movie.description.toLowerCase().includes(normalizedQuery)
+    );
+  });
 
   return (
     <div className="page">
@@ -45,7 +38,7 @@ export const App = () => {
         </div>
 
         <MoviesList
-          movies={newMovies}
+          movies={visibleMovies}
           query={query}
           filterBy={newQuery => setQuery(newQuery)}
         />
